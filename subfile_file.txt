@@ -1,0 +1,92 @@
+   subfile
+
+       A*%%TS  SD  20241111  002549  TEN10       REL-V7R1M0  5770-WDS             
+      A*%%EC                                                                     
+      A                                      DSPSIZ(24 80 *DS3)                  
+      A                                      CF02(02 'UPDATE')                   
+      A                                      CF04(04 'DELETE')                   
+      A                                      CF06(06 'INSERT')                   
+      A                                      CA03(03 'EXIT')                     
+      A                                      CA12(12 'CANCEL')                   
+      A                                      CF01(01 'HELP')                     
+      A          R RECORDA                                                       
+      A*%%TS  SD  20241110  184650  TEN10       REL-V7R1M0  5770-WDS             
+      A                                      OVERLAY                             
+      A                                 23  9'F2=UPDATE'                         
+      A                                 23 22'F4=DELETE'                         
+      A                                 23 35'F6=INSERT'                         
+      A                                 23 47'F3=EXIT'                           
+      A                                 23 56'F12=CANCEL'                        
+      A                                 23 68'F1=HELP'                           
+      A          R SFL1                      SFL                                 
+
+           A*%%TS  SD  20241108  175530  TEN10       REL-V7R1M0  5770-WDS              
+     A                                      TEXT('Y')                            
+     A            ITCODE    R        B  7 11REFFLD(STOCK/ITCODE TEN10LIB/STOCKM) 
+     A                                      COLOR(WHT)                           
+     A            ITNM      R        B  7 20REFFLD(STOCK/ITNM TEN10LIB/STOCKM)   
+     A                                      COLOR(WHT)                           
+     A            UNT       R        B  7 31REFFLD(STOCK/UNT TEN10LIB/STOCKM)    
+     A                                      COLOR(WHT)                           
+     A            TOTSTOCK  R        B  7 40REFFLD(STOCK/TOTSTOCK TEN10LIB/STOC- 
+     A                                      KM)                                  
+     A                                      COLOR(WHT)                           
+     A            RCDLVL    R        B  7 52REFFLD(STOCK/RCDLVL TEN10LIB/STOCKM) 
+     A                                      COLOR(WHT)                           
+     A            PRC       R        B  7 63REFFLD(STOCK/PRC TEN10LIB/STOCKM)    
+     A                                      COLOR(WHT)                           
+     A            VAL       R        B  7 71REFFLD(STOCK/VAL TEN10LIB/STOCKM)    
+     A                                      COLOR(WHT)                           
+     A          R SFLCTL1                   SFLCTL(SFL1)                         
+     A*%%TS  SD  20241108  175530  TEN10       REL-V7R1M0  5770-WDS              
+     A                                      SFLSIZ(9999)                         
+                                                                                 
+
+       A                                      SFLPAG(0010)                       
+   A                                      TEXT('Y')                          
+   A                                      RTNCSRLOC(&RCD &FLD &POS)          
+   A                                      OVERLAY                            
+   A  40                                  SFLDSP                             
+   A  41                                  SFLDSPCTL                          
+   A  42                                  SFLCLR                             
+   A  43                                  SFLEND(*MORE)                      
+   A            RCD           10A  H                                         
+   A            FLD           10A  H                                         
+   A            POS            4S 0H                                         
+   A            SRECNO         4S 0H      SFLRCDNBR                          
+   A                                  2  2DATE                               
+   A                                      EDTCDE(Y)                          
+   A                                      COLOR(TRQ)                         
+   A                                  2 35'STOCK MASTER'                     
+   A                                      DSPATR(UL)                         
+   A                                      COLOR(YLW)                         
+   A                                  2 70TIME                               
+   A                                      COLOR(TRQ)                         
+
+
+      A                                  6 11'ITCODE'                     
+   A                                      COLOR(GRN)                   
+   A                                  6 31'UNT'                        
+   A                                      COLOR(GRN)                   
+   A                                  6 39'TOTSTOCK'                   
+   A                                      COLOR(GRN)                   
+   A                                  6 52'RCDLVL'                     
+   A                                  6 63'PRICE'                      
+   A                                      COLOR(GRN)                   
+   A                                  6 20'IT NAME'                    
+   A                                      COLOR(GRN)                   
+   A                                  6 72'VALUE'                      
+   A          R HELPA                                                  
+   A*%%TS  SD  20241111  002549  TEN10       REL-V7R1M0  5770-WDS      
+   A                                      TEXT('Y')                    
+   A                                      OVERLAY                      
+   A                                      WINDOW(3 8 15 60)            
+   A                                      WDWBORDER((*COLOR WHT))      
+   A                                  1 29'HELP'                       
+   A                                      COLOR(YLW)                   
+
+    A                                  2  1'1.'                                  
+  A                                  2  4'USE THIS TO VIEW ITEMS'              
+  A                                  3  1'2.'                                  
+  A                                  3  4'YOU CAN MAKE EDITS WITH 2=CHANGE A-  
+  A                                      ND 4=DELETE'                          
