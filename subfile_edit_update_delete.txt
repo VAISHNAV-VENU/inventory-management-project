@@ -1,0 +1,134 @@
+
+
+ Hdebug(*yes) OPTION(*SRCSTMT:*NODEBUGIO)                                   
+ FMASTSUBF  cf   e             workstn SFILE(SFL1:RRN#) INFDS(FILDS)        
+ F                                     PREFIX(D)                            
+ FSTOCKM    IF   E           K DISK                                         
+ D RRN#            S              4S 0                                      
+ DFILDS            DS                                                       
+ D RECNO                 378    379I 0                                      
+ DOPTION           S              2P 0                                      
+  *                                                                         
+ C/EXEC SQL                                                                 
+ C+ SET OPTION CLOSQLCSR = *ENDMOD,                                         
+ C+ COMMIT = *NONE                                                          
+ C/END-EXEC                                                                 
+ C*                  DOW       *IN03 = *OFF AND *IN12 = *OFF                
+ C                   EXSR      DSPSR                                        
+ C                   EXSR      DELSR                                        
+ C*                  ENDDO                                                  
+ C/EXEC SQL                                                                 
+ C+ CLOSE C1                                                                
+
+  C/END-EXEC                                                    
+ C                   EVAL      *INLR = *ON                     
+ C     *INZSR        BEGSR                                     
+ C                   EVAL      *IN40 = *OFF                    
+ C                   EVAL      *IN41 = *OFF                    
+ C                   EVAL      *IN42 = *OFF                    
+ C                   EVAL      *IN43 = *OFF                    
+ C                   EVAL      RRN#  = 0                       
+ C                   EVAL      DSRECNO = 1                     
+  *                                                            
+ C/EXEC SQL                                                    
+ C+ DECLARE C1 CURSOR FOR                                      
+ C+ SELECT ITCODE, ITNM, UNT, TOTSTOCK, RCDLVL, PRC, VAL       
+ C+ FROM STOCKM                                                
+ C/END-EXEC                                                    
+ C/EXEC SQL                                                    
+ C+ OPEN C1                                                    
+ C/END-EXEC                                                    
+ C                   EXSR      CLEARSR                         
+ C                   EXSR      LOADSR      
+
+  C                   ENDSR                                                      
+  *                                                                             
+ C     CLEARSR       BEGSR                                                      
+ C                   EVAL      RRN# = 0                                         
+ C                   EVAL      *IN42= *ON                                       
+ C                   WRITE     SFLCTL1                                          
+ C                   EVAL      *IN42= *OFF                                      
+ C                   ENDSR                                                      
+  *                                                                             
+ C     LOADSR        BEGSR                                                      
+ C                   EVAL      *IN43 = *OFF                                     
+ C/EXEC SQL                                                                     
+ C+ FETCH FROM C1 INTO :DITCODE,:DITNM,:DUNT,:DTOTSTOCK,                        
+ C+ :DRCDLVL, :DPRC, :DVAL                                                      
+ C/END-EXEC                                                                     
+ C                   DOW       SQLCOD = *ZEROS                                  
+ C                   EVAL      RRN# = RRN# + 1                                  
+ C                   IF        RRN# > 9999                                      
+ C                   LEAVE                                                      
+ C                   ENDIF                                                         
+
+  C                   WRITE     SFL1                                
+ C/EXEC SQL                                                        
+ C+ FETCH FROM C1 INTO :DITCODE, :DITNM, :DUNT, :DTOTSTOCK,        
+ C+ :DRCDLVL, :DPRC, :DVAL                                         
+ C/END-EXEC                                                        
+ C                   ENDDO                                         
+ C                   EVAL      *IN43 = *ON                         
+ C                   ENDSR                                         
+  *                                                                
+ C     DSPSR         BEGSR                                         
+ C                   EVAL      *IN40 = *ON                         
+ C                   EVAL      *IN41 = *ON                         
+ C                   IF        RRN# = 0                            
+ C                   EVAL      *IN40 = *OFF                        
+ C                   ENDIF                                         
+ C                   WRITE     RECORDA                             
+ C                   EXFMT     SFLCTL1                             
+ C                   EVAL      DSRECNO = RECNO                     
+ C                   EVAL      *IN40 = *OFF                        
+ C                   EVAL      *IN41 = *OFF                        
+
+   *                                                                          
+ C                   IF        *IN06=*ON                                     
+ C                   READC     SFL1                                          
+ C                   DOW       NOT %EOF(MASTSUBF)                            
+ C/EXEC SQL                                                                  
+ C+ INSERT INTO STOCKM                                                       
+ C+ VALUES(:DITCODE, :DITNM, :DUNT, :DTOTSTOCK, :DRCDLVL, :DPRC, :DVAL)      
+ C/END-EXEC                                                                  
+ C/EXEC SQL                                                                  
+ C+ UPDATE STOCKM                                                            
+ C+ SET VAL= :DTOTSTOCK * :DPRC                                              
+ C+ WHERE ITCODE= :DITCODE                                                   
+ C/END-EXEC                                                                  
+ C     'INSERTED'    DSPLY                                                   
+ C                   READC     SFL1                                          
+ C                   EVAL      *IN06 = *OFF                                  
+ C                   ENDDO                                                   
+ C                   ENDIF                                                   
+ C                   ENDSR                                                   
+  *                                                                          
+
+ C     DELSR         BEGSR                                                
+ C     'ENTER OPT'   DSPLY                   OPTION                       
+ C                   IF        OPTION=4                                   
+ C                   READC     SFL1                                       
+ C                   DOW       NOT %EOF(MASTSUBF)                         
+ C/EXEC SQL                                                               
+ C+ DELETE FROM STOCKM                                                    
+ C+ WHERE ITCODE=:DITCODE                                                 
+ C/END-EXEC                                                               
+ C     'DELETED'     DSPLY                                                
+ C                   READC     SFL1                                       
+ C                   ENDDO                                                
+ C                   ELSEIF    OPTION=2                                   
+ C                   READC     SFL1                                       
+ C                   DOW       NOT %EOF(MASTSUBF)                         
+ C/EXEC SQL                                                               
+ C+ UPDATE STOCKM                                                         
+ C+ SET ITNM=:DITNM, UNT=:DUNT, RCDLVL=:DRCDLVL,                          
+ C+ PRC=:DPRC, VAL=:DVAL                                                  
+ C+ WHERE ITCODE=:DITCODE                                                 
+
+  C/END-EXEC                                    
+ C                   READC     SFL1            
+ C                   ENDDO                     
+ C                   ENDIF                     
+ C                   ENDSR                     
+
+                  
