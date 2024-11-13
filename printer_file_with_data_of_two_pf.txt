@@ -1,0 +1,50 @@
+
+  P1TRYNAME 
+
+ H OPTION(*NODEBUGIO)                                   
+ FPRNMF     O    E             PRINTER                  
+  *                                                     
+ C/EXEC SQL                                             
+ C+ SET OPTION CLOSQLCSR = *ENDMOD,                     
+ C+            COMMIT    = *NONE                        
+ C/END-EXEC                                             
+  *                                                     
+ C/EXEC SQL                                             
+ C+ DECLARE C1 SCROLL CURSOR FOR                        
+ C+ SELECT G.TOTAL, G.ITCODE, I.ITNM                    
+ C+ FROM (                                              
+ C+        SELECT SUM(QTISS) AS TOTAL, ITCODE           
+ C+        FROM GOODI                                   
+ C+        GROUP BY ITCODE                              
+ C+ )G                                                  
+ C+ JOIN STOCKM I ON G.ITCODE = I.ITCODE                
+ C+ ORDER BY G.TOTAL                                    
+ C/END-EXEC        
+
+   *                                                                    
+ C/EXEC SQL                                                            
+ C+ OPEN C1                                                            
+ C/END-EXEC                                                            
+  *                                                                    
+ C                   WRITE     HEADER                                  
+ C                   WRITE     HEADER1                                 
+ C/EXEC SQL                                                            
+ C+ FETCH LAST FROM C1 INTO :QTISS, :ITCODE, :ITNM                     
+ C/END-EXEC                                                            
+ C                   DOW       (SQLCODE = 0)                           
+ C*                                                                    
+ C                   IF        SQLCOD <> 0                             
+ C                   LEAVE                                             
+ C                   ENDIF                                             
+ C                   WRITE     VALUES                                  
+ C/EXEC SQL                                                            
+ C+ FETCH PRIOR FROM C1 INTO :QTISS, :ITCODE, :ITNM                    
+ C/END-EXEC                                                            
+ C                   ENDDO                                             
+
+   *                                         
+ C/EXEC SQL                                 
+ C+ CLOSE C1                                
+ C/END-EXEC                                 
+  *                                         
+ C                   EVAL      *INLR = *ON                                       
