@@ -1,0 +1,18 @@
+  login file
+
+ HOPTION(*NODEBUGIO:*SRCSTMT)                                             
+ FUSERFILE  IF   E           K DISK                                       
+ FLOGINPG   CF   E             WORKSTN                                    
+ C*                                                                       
+ C*    *START        SETLL     USERFILE                                   
+ C                   DOW       *IN03 = *OFF                               
+ C                   EXFMT     TEST                                       
+ C     DUSERID       CHAIN     USERFILE                                   
+ C                   IF        %FOUND(USERFILE) AND PASSWRD = DPASSWORD   
+ C                   CALL      'ROUTE1'                                   
+ C*                  ENDIF                                                
+ C                   ELSE                                                 
+ C                   CALL      'SIGNENTRY'                                
+ C                   ENDIF                                                
+ C                   ENDDO                                                
+ C                   SETON                                            LR  
